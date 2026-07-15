@@ -7,7 +7,7 @@ import healthRoutes from "./routes/healthRoutes.js";
 import ticketRoutes from "./routes/ticketRoutes.js";
 // Load environment variables
 dotenv.config();
-
+console.log(process.env.GROQ_API_KEY);
 // Connect to MongoDB
 connectDB();
 

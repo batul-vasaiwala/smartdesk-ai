@@ -1,9 +1,21 @@
 import Ticket from "../models/Ticket.js";
+import { analyzeTicket } from "../services/aiService.js";
 
 // Create Ticket
 export const createTicket = async (req, res) => {
   try {
-    const ticket = await Ticket.create(req.body);
+    const { subject, message } = req.body;
+
+    const aiResult = await analyzeTicket(subject, message);
+
+    const ticket = await Ticket.create({
+      subject,
+      message,
+      category: aiResult.category,
+      priority: aiResult.priority,
+      sentiment: aiResult.sentiment,
+      aiReply: aiResult.reply,
+    });
 
     res.status(201).json({
       success: true,
@@ -16,7 +28,6 @@ export const createTicket = async (req, res) => {
     });
   }
 };
-
 // Get All Tickets
 export const getTickets = async (req, res) => {
   try {
@@ -34,7 +45,6 @@ export const getTickets = async (req, res) => {
     });
   }
 };
-
 // Get Single Ticket
 export const getTicket = async (req, res) => {
   try {
