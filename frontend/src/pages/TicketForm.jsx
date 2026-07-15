@@ -24,7 +24,7 @@ export default function TicketForm() {
         message,
       });
 
-      setTicketId(response.data._id);
+      setTicketId(response.data.data._id);
       setSuccess(true);
 
       setSubject("");

@@ -6,6 +6,7 @@ The following AI tools were used during the development of this project:
 
 - ChatGPT (OpenAI) – Used for brainstorming, debugging, architecture guidance, documentation, and code improvements.
 - Groq API (Llama 3.3 70B Versatile) – Used inside the application to analyze support tickets by predicting category, priority, sentiment, and generating customer replies.
+- v0 - Used for designing UI of the application
 
 ---
 
