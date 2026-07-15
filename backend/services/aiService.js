@@ -1,4 +1,5 @@
 import dotenv from "dotenv";
+import { parseAIResponse } from "../utils/parseAIResponse.js";
 dotenv.config();
 
 import Groq from "groq-sdk";
@@ -47,9 +48,7 @@ Only return JSON.
     let text = completion.choices[0].message.content.trim();
 
     // Remove markdown if present
-    text = text.replace(/```json/g, "").replace(/```/g, "").trim();
-
-    return JSON.parse(text);
+   return parseAIResponse(text);
   } catch (error) {
     console.error("Groq Error:", error);
 
