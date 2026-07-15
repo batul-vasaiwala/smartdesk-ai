@@ -7,9 +7,12 @@ import {
   updateTicket,
   resolveTicket,
   deleteTicket,
+  getStatistics
 } from "../controllers/ticketController.js";
 
 const router = express.Router();
+
+router.get("/stats", getStatistics);
 
 router.post("/", createTicket);
 

@@ -31,18 +31,80 @@ export const createTicket = async (req, res) => {
 // Get All Tickets
 export const getTickets = async (req, res) => {
   try {
-    const tickets = await Ticket.find().sort({ createdAt: -1 });
+    const { search, priority, status, category } = req.query;
+
+    let filter = {};
+
+    if (search) {
+      filter.subject = {
+        $regex: search,
+        $options: "i",
+      };
+    }
+
+    if (priority && priority !== "All") {
+      filter.priority = priority;
+    }
+
+    if (status && status !== "All") {
+      filter.status = status;
+    }
+
+    if (category && category !== "All") {
+      filter.category = category;
+    }
+
+    const tickets = await Ticket.find(filter).sort({
+      createdAt: -1,
+    });
 
     res.status(200).json({
       success: true,
       count: tickets.length,
       data: tickets,
     });
+
   } catch (error) {
     res.status(500).json({
       success: false,
       message: error.message,
     });
+  }
+};
+export const getStatistics = async (req, res) => {
+  try {
+
+    const total = await Ticket.countDocuments();
+
+    const open = await Ticket.countDocuments({
+      status: "Open",
+    });
+
+    const resolved = await Ticket.countDocuments({
+      status: "Resolved",
+    });
+
+    const high = await Ticket.countDocuments({
+      priority: "High",
+    });
+
+    res.json({
+      success: true,
+      data: {
+        total,
+        open,
+        resolved,
+        high,
+      },
+    });
+
+  } catch (error) {
+
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+
   }
 };
 // Get Single Ticket
