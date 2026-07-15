@@ -4,7 +4,7 @@ import cors from "cors";
 
 import connectDB from "./config/db.js";
 import healthRoutes from "./routes/healthRoutes.js";
-
+import ticketRoutes from "./routes/ticketRoutes.js";
 // Load environment variables
 dotenv.config();
 
@@ -20,6 +20,7 @@ app.use(express.json());
 
 // Routes
 app.use("/api/health", healthRoutes);
+app.use("/api/tickets", ticketRoutes);
 
 // Default Route
 app.get("/", (req, res) => {
