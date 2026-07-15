@@ -135,13 +135,18 @@ export const getTicket = async (req, res) => {
 export const updateTicket = async (req, res) => {
   try {
     const ticket = await Ticket.findByIdAndUpdate(
-      req.params.id,
-      req.body,
-      {
+    req.params.id,
+    {
+        aiReply: req.body.aiReply,
+        approved: req.body.approved,
+        status: req.body.status,
+    },
+    {
         new: true,
         runValidators: true,
-      }
-    );
+    }
+);
+   
 
     if (!ticket) {
       return res.status(404).json({

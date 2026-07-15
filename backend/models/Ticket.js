@@ -36,6 +36,10 @@ const ticketSchema = new mongoose.Schema(
       type: String,
       default: "Open",
     },
+    approved: {
+    type: Boolean,
+    default: false
+},
   },
   {
     timestamps: true,
