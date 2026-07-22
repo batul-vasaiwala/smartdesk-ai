@@ -4,26 +4,46 @@ import {
   createTicket,
   getTickets,
   getTicket,
+  getStatistics,
   updateTicket,
   resolveTicket,
   deleteTicket,
-  getStatistics
+  getMyTickets,
 } from "../controllers/ticketController.js";
+
+import { protect, adminOnly } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
-router.get("/stats", getStatistics);
 
-router.post("/", createTicket);
+// =====================
+// Customer Routes
+// =====================
 
-router.get("/", getTickets);
+router.post("/", protect, createTicket);
 
-router.get("/:id", getTicket);
+router.get("/my", protect, getMyTickets);
 
-router.put("/:id", updateTicket);
 
-router.patch("/:id/resolve", resolveTicket);
+// =====================
+// Admin Routes
+// =====================
 
-router.delete("/:id", deleteTicket);
+router.get("/stats", protect, adminOnly, getStatistics);
+
+router.get("/", protect, adminOnly, getTickets);
+
+router.put("/:id", protect, adminOnly, updateTicket);
+
+router.patch("/:id/resolve", protect, adminOnly, resolveTicket);
+
+router.delete("/:id", protect, adminOnly, deleteTicket);
+
+
+// =====================
+// Single Ticket (KEEP LAST)
+// =====================
+
+router.get("/:id", protect, getTicket);
 
 export default router;

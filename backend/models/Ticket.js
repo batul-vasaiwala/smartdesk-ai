@@ -2,6 +2,11 @@ import mongoose from "mongoose";
 
 const ticketSchema = new mongoose.Schema(
   {
+    customer: {
+  type: mongoose.Schema.Types.ObjectId,
+  ref: "User",
+  required: true,
+},
     subject: {
       type: String,
       required: true,
@@ -40,6 +45,19 @@ const ticketSchema = new mongoose.Schema(
     type: Boolean,
     default: false
 },
+history: [
+  {
+    action: {
+      type: String,
+      required: true,
+    },
+    date: {
+      type: Date,
+      default: Date.now,
+    },
+  },
+],
+
   },
   {
     timestamps: true,

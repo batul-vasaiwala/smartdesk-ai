@@ -1,4 +1,4 @@
-export default function DashboardHeader() {
+export default function DashboardHeader({openModal}) {
   return (
 
 <div className="flex justify-between items-center mt-8 mb-8">
@@ -19,10 +19,11 @@ AI-powered customer support management
 
 </div>
 
-<button className="bg-blue-600 text-white px-5 py-3 rounded-lg hover:bg-blue-700">
-
-+ New Ticket
-
+<button
+  onClick={openModal}
+  className="bg-blue-600 text-white px-5 py-3 rounded-lg hover:bg-blue-700"
+>
+  + New Admin
 </button>
 
 </div>

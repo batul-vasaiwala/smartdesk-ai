@@ -3,7 +3,8 @@ import cors from "cors";
 
 import healthRoutes from "./routes/healthRoutes.js";
 import ticketRoutes from "./routes/ticketRoutes.js";
-
+import authRoutes from "./routes/authRoutes.js";
+import userRoutes from "./routes/userRoutes.js";
 const app = express();
 
 // Middleware
@@ -13,6 +14,8 @@ app.use(express.json());
 // Routes
 app.use("/api/health", healthRoutes);
 app.use("/api/tickets", ticketRoutes);
+app.use("/api/auth", authRoutes);
+app.use("/api/users", userRoutes);
 
 // Default Route
 app.get("/", (req, res) => {

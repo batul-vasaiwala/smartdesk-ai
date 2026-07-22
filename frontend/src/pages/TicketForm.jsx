@@ -1,5 +1,6 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { logout, getUser } from "../services/authService";
 import {
   Search,
   PencilLine,
@@ -12,8 +13,10 @@ import {
   CheckCircle2,
   Copy,
   Check,
+  LogOut,
+  UserCircle2,
 } from "lucide-react";
-import { createTicket } from "../services/ticketService";
+import { createTicket, getMyTickets } from "../services/ticketService";
 
 // ---- Static content ---------------------------------------------------------
 
@@ -48,6 +51,9 @@ const FEATURES = [
 // ---- Component ---------------------------------------------------------------
 
 export default function TicketForm() {
+  const navigate = useNavigate();
+  const user = getUser();
+
   const [subject, setSubject] = useState("");
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
@@ -55,6 +61,25 @@ export default function TicketForm() {
   const [ticketId, setTicketId] = useState("");
   const [error, setError] = useState("");
   const [copied, setCopied] = useState(false);
+  const [history, setHistory] = useState([]);
+
+  useEffect(() => {
+    loadHistory();
+  }, []);
+
+  const loadHistory = async () => {
+    try {
+      const res = await getMyTickets();
+      setHistory(res.data.data);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const handleLogout = () => {
+    logout();
+    navigate("/", { replace: true });
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -73,6 +98,7 @@ export default function TicketForm() {
       setSuccess(true);
       setSubject("");
       setMessage("");
+      loadHistory();
     } catch (err) {
       console.log(err);
       setError("We couldn't submit your ticket. Please try again.");
@@ -93,6 +119,35 @@ export default function TicketForm() {
 
   return (
     <div className="min-h-screen bg-slate-50">
+      {/* Navbar */}
+      <header className="sticky top-0 z-40 border-b border-slate-200 bg-white/90 backdrop-blur-sm">
+        <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
+          <Link to="/" className="flex items-center gap-2">
+            <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-600 text-sm font-bold text-white">
+              SD
+            </span>
+            <span className="text-lg font-bold text-slate-900">
+              SmartDesk <span className="text-blue-600">AI</span>
+            </span>
+          </Link>
+
+          <div className="flex items-center gap-3">
+            <div className="hidden items-center gap-2 rounded-full bg-slate-100 px-3 py-1.5 text-sm font-medium text-slate-600 sm:flex">
+              <UserCircle2 size={18} className="text-slate-400" />
+              {user?.name}
+            </div>
+
+            <button
+              onClick={handleLogout}
+              className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 px-3.5 py-2 text-sm font-semibold text-slate-600 transition hover:border-red-200 hover:bg-red-50 hover:text-red-600"
+            >
+              <LogOut size={16} />
+              <span className="hidden sm:inline">Logout</span>
+            </button>
+          </div>
+        </div>
+      </header>
+
       {/* Hero */}
       <div className="bg-gradient-to-b from-blue-700 to-blue-600 py-16">
         <div className="mx-auto max-w-6xl px-6 text-center">
@@ -101,7 +156,7 @@ export default function TicketForm() {
           </span>
 
           <h1 className="mt-5 text-4xl font-bold tracking-tight text-white sm:text-5xl">
-            SmartDesk AI
+            Welcome back{user?.name ? `, ${user.name}` : ""}
           </h1>
 
           <p className="mt-3 text-lg font-medium text-blue-100">
@@ -258,24 +313,55 @@ export default function TicketForm() {
             </div>
 
             <div className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
-              <h3 className="mb-4 text-lg font-bold text-slate-900">
-                Support information
+              <h3 className="mb-5 text-lg font-bold text-slate-900">
+                Recent Tickets
               </h3>
 
-              <dl className="space-y-4 text-sm">
-                <div>
-                  <dt className="font-semibold text-slate-700">Email</dt>
-                  <dd className="text-slate-500">support@smartdesk.ai</dd>
+              {history.length === 0 ? (
+                <p className="text-sm text-slate-500">
+                  No tickets submitted yet.
+                </p>
+              ) : (
+                <div className="space-y-4">
+                  {history.slice(0, 5).map((ticket) => (
+                    <Link
+                      key={ticket._id}
+                      to={`/status?id=${ticket._id}`}
+                      className="block rounded-xl border border-slate-200 p-4 transition hover:border-blue-500 hover:bg-blue-50"
+                    >
+                      <div className="flex items-start justify-between">
+                        <div>
+                          <h4 className="font-semibold text-slate-800">
+                            {ticket.subject}
+                          </h4>
+
+                          <p className="mt-1 text-xs text-slate-500">
+                            {new Date(ticket.createdAt).toLocaleDateString()}
+                          </p>
+                        </div>
+
+                        <span
+                          className={`rounded-full px-2 py-1 text-xs ${
+                            ticket.status === "Resolved"
+                              ? "bg-green-100 text-green-700"
+                              : "bg-yellow-100 text-yellow-700"
+                          }`}
+                        >
+                          {ticket.status}
+                        </span>
+                      </div>
+
+                      <p className="mt-3 line-clamp-2 text-sm text-slate-500">
+                        {ticket.message}
+                      </p>
+
+                      <div className="mt-3 text-sm font-semibold text-blue-600">
+                        View Details →
+                      </div>
+                    </Link>
+                  ))}
                 </div>
-                <div>
-                  <dt className="font-semibold text-slate-700">Working hours</dt>
-                  <dd className="text-slate-500">Mon – Fri, 9 AM – 6 PM</dd>
-                </div>
-                <div>
-                  <dt className="font-semibold text-slate-700">Expected response</dt>
-                  <dd className="text-slate-500">Within 24 hours</dd>
-                </div>
-              </dl>
+              )}
             </div>
           </div>
         </div>

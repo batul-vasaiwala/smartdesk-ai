@@ -1,10 +1,27 @@
 import api from "./api";
 
+// ==============================
+// CUSTOMER
+// ==============================
+
 // Create Ticket
 export const createTicket = (data) =>
   api.post("/tickets", data);
 
-// Get All Tickets (Search + Filters + Sort + Pagination)
+// Get Logged-in Customer Tickets
+export const getMyTickets = () =>
+  api.get("/tickets/my");
+
+// Get Single Ticket
+export const getTicket = (id) =>
+  api.get(`/tickets/${id}`);
+
+
+// ==============================
+// ADMIN
+// ==============================
+
+// Get All Tickets
 export const getTickets = ({
   search = "",
   category = "All",
@@ -13,7 +30,7 @@ export const getTickets = ({
   sort = "newest",
   page = 1,
   limit = 5,
-}) =>
+} = {}) =>
   api.get("/tickets", {
     params: {
       search,
@@ -29,10 +46,6 @@ export const getTickets = ({
 // Dashboard Statistics
 export const getStats = () =>
   api.get("/tickets/stats");
-
-// Get Single Ticket
-export const getTicket = (id) =>
-  api.get(`/tickets/${id}`);
 
 // Update Ticket
 export const updateTicket = (id, data) =>
